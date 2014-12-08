@@ -9,6 +9,10 @@ $count = 0;
 while(count($urlsToCrawl) > 0){
 	$url = array_pop($urlsToCrawl);
 	
+	if(isset($urlsCrawled[$url])){
+		continue;
+	}
+	
 	echo 'Crawling: ', $url, '<br>';
 	flush();
 	ob_flush();
@@ -39,6 +43,7 @@ while(count($urlsToCrawl) > 0){
 		}
 		
 		if(!empty($href)){
+			$href = preg_replace("/^(?:(?:http:|https:)\/\/)?www\./", '', $href);
 			$h = parse_url($href);
 			
 			if(array_search($h['scheme'], ['http', 'https', 'mailto']) === FALSE){
@@ -78,10 +83,9 @@ while(count($urlsToCrawl) > 0){
 				}
 			}
 			
-			if(!isset($urlsCrawled[$href])){
-				++$f;
-				$urlsToCrawl[] = $href;
-			}
+			++$f;
+			$href = str_replace(' ', '%20', $href);
+			$urlsToCrawl[] = $href;
 		}
 	}
 	
@@ -90,6 +94,6 @@ while(count($urlsToCrawl) > 0){
 		flush();
 	}
 	
-	// if(++$count == 100)
+	// if(++$count == 10)
 		// die('Died from too much work!');
 }
